@@ -1,9 +1,8 @@
 require('./app.scss');
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 
-class App extends React.Component {
+class HarViewer extends React.Component {
     render() {
         return (
             <div>
@@ -13,4 +12,4 @@ class App extends React.Component {
     }
 }
 
-ReactDOM.render(<App/>, document.body);
+export default HarViewer;
