@@ -19,6 +19,11 @@ class HarEntryTable extends React.Component {
                 size: 100,
                 time: 200
             },
+            sortDirection: {
+                url: null,
+                size: null,
+                time: null
+            },
             tableWidth: 1000,
             tableHeight: 500
         };
@@ -38,8 +43,6 @@ class HarEntryTable extends React.Component {
 
 
     render() {
-
-        console.log('entries', this.props.entries);
         return (
             <Table ref="entriesTable"
                    rowsCount={this.props.entries.length}
@@ -51,17 +54,20 @@ class HarEntryTable extends React.Component {
                    isColumnResizing={this.state.isColumnResizing}
                    onColumnResizeEndCallback={this.onColumnResized.bind(this)}>
                 <Column dataKey="url"
+                        headerRenderer={this.renderHeader.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.url}
                         isResizable={true}
                         label="Url"
                         flexGrow={null}/>
                 <Column dataKey="size"
+                        headerRenderer={this.renderHeader.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.size}
                         isResizable={true}
                         label="Size"/>
                 <Column dataKey="time"
+                        headerRenderer={this.renderHeader.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.time}
                         isResizable={true}
@@ -104,10 +110,53 @@ class HarEntryTable extends React.Component {
             tableHeight: document.body.clientHeight - parent.offsetTop - GutterWidth * 0.5
         })
     }
+
+    renderHeader(label, dataKey) {
+        var dir = this.state.sortDirection[dataKey];
+        var classMap = {
+            asc: 'glyphicon, glyphicon-sort-by-attributes',
+            desc: 'glyphicon, glyphicon-sort-by-attributes-alt'
+        };
+
+        var sortClass = dir ? classMap[dir] : '';
+
+        return (
+            <div className="text-primary sortable"
+                 onClick={this.columnClicked.bind(this, dataKey)}>
+                <strong>{label}</strong>
+                &nbsp;
+                <i className={sortClass}></i>
+            </div>
+        )
+    }
+
+    columnClicked(dataKey) {
+        let sortDirections = this.state.sortDirection;
+        let dir = sortDirections[dataKey];
+
+        switch (dir) {
+            case 'asc':
+                dir = 'desc';
+                break;
+            case 'desc':
+            default:
+                dir = 'asc';
+        }
+
+        if (this.props.onColumnSort) {
+            this.props.onColumnSort(dataKey, dir);
+        }
+    }
 }
 
 HarEntryTable.defaultProps = {
-    entries: []
+    entries: [],
+    onColumnSort: null
+};
+
+HarEntryTable.propTypes = {
+    entries: React.PropTypes.array,
+    onColumnSort: React.PropTypes.func
 };
 
 export default HarEntryTable;

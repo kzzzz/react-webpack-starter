@@ -26,37 +26,6 @@ class HarViewer extends React.Component {
     componentDidMount() {
     }
 
-    renderViewer(har) {
-
-        let pages = harParser(har);
-        let currentPage = pages[0];
-        let entries = currentPage.entries;
-
-        console.log('currentPage', currentPage);
-        console.log('entries',  currentPage.entries);
-        return (
-            <Grid fluid>
-                <Row>
-                    <Col sm={12}>
-                        <HarEntryTable entries={entries}/>
-                    </Col>
-                </Row>
-            </Grid>
-        )
-    }
-
-    renderEmptyViewer() {
-        return (
-            <Grid fluid>
-                <Row>
-                    <p></p>
-                    <Alert bsStyle="warning">
-                        <strong>No HAR loaded</strong>
-                    </Alert>
-                </Row>
-            </Grid>
-        )
-    }
 
     render() {
         const content = this.state.activeHar
@@ -109,6 +78,38 @@ class HarViewer extends React.Component {
         )
     }
 
+    renderViewer(har) {
+
+        let pages = harParser(har);
+        let currentPage = pages[0];
+        let entries = currentPage.entries;
+        entries = this.sortEntriesByKey(this.state.sortKey, this.state.sortDirection, currentPage.entries);
+
+        return (
+            <Grid fluid>
+                <Row>
+                    <Col sm={12}>
+                        <HarEntryTable
+                            entries={entries}
+                            onColumnSort={this.onColumnSort.bind(this)}/>
+                    </Col>
+                </Row>
+            </Grid>
+        )
+    }
+
+    renderEmptyViewer() {
+        return (
+            <Grid fluid>
+                <Row>
+                    <p></p>
+                    <Alert bsStyle="warning">
+                        <strong>No HAR loaded</strong>
+                    </Alert>
+                </Row>
+            </Grid>
+        )
+    }
 
     sampleChanged() {
         let selection = ReactDOM.findDOMNode(this.refs.selector).value;
@@ -142,6 +143,35 @@ class HarViewer extends React.Component {
     }
 
     filterTextChanged() {
+
+    }
+
+    onColumnSort(dataKey, direction) {
+        this.setState({sortKey: dataKey, sortDirection: direction});
+    }
+
+    sortEntriesByKey(sortKey, sortDirection, entries) {
+        if(_.isEmpty(sortKey) | _.isEmpty(sortDirection)){
+            return entries;
+        }
+
+        var keyMap = {
+            url: 'request.url',
+            time: 'time.start'
+        };
+
+        var getValue = function(entry){
+            let key = keyMap[sortKey] || sortKey;
+            return _.get(entry, key);
+        };
+
+        var sorted = _.sortBy(entries, getValue);
+
+        if(sortDirection === 'desc'){
+            sorted.reverse();
+        }
+
+        return sorted;
 
     }
 }

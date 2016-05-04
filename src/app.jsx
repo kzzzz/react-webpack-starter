@@ -1,6 +1,7 @@
 // require('bootstrap/dist/css/bootstrap.css');
 // require('bootstrap/dist/css/bootstrap-theme.css');
-require('./app.scss');
+require('./styles/app.scss');
+require('./styles/_har-sortable.scss');
 require('./samples');
 
 import React from 'react';
