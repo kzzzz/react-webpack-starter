@@ -1,13 +1,16 @@
+// require('bootstrap/dist/css/bootstrap.css');
+// require('bootstrap/dist/css/bootstrap-theme.css');
 require('./app.scss');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import HarViewer from './components/HarViewer.jsx';
 
 class App extends React.Component {
     render() {
         return (
             <div>
-                <h1>Hello React</h1>
+                <HarViewer />
             </div>
         )
     }
