@@ -59,7 +59,7 @@ function identify(mimeType) {
 
     let fileType = _.find(_.keys(types), (type) => _.includes(types[type].mime, mimeType));
 
-    return fileType || other;
+    return fileType || 'other';
 }
 
 export default {
