@@ -18,7 +18,7 @@ class HarViewer extends React.Component {
 
     initialState() {
         return {
-            activaHar: null,
+            activeHar: null,
             entries: []
         };
     }
@@ -33,6 +33,7 @@ class HarViewer extends React.Component {
         let entries = currentPage.entries;
 
         console.log('currentPage', currentPage);
+        console.log('entries',  currentPage.entries);
         return (
             <Grid fluid>
                 <Row>
@@ -118,7 +119,6 @@ class HarViewer extends React.Component {
 
 
         if (har) {
-            console.log('selected har', har);
             this.setState({activeHar: har});
         } else {
             this.setState(this.initialState());

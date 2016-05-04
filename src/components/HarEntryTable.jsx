@@ -20,7 +20,7 @@ class HarEntryTable extends React.Component {
                 time: 200
             },
             tableWidth: 1000,
-            tableHeiht: 500
+            tableHeight: 500
         };
     }
 
@@ -38,32 +38,49 @@ class HarEntryTable extends React.Component {
 
 
     render() {
+
+        console.log('entries', this.props.entries);
         return (
             <Table ref="entriesTable"
                    rowsCount={this.props.entries.length}
                    width={this.state.tableWidth}
                    headerHeight={30}
-                   height={this.state.tableHeiht}
+                   height={this.state.tableHeight}
                    rowHeight={30}
                    rowGetter={this.getEntry.bind(this)}
                    isColumnResizing={this.state.isColumnResizing}
                    onColumnResizeEndCallback={this.onColumnResized.bind(this)}>
                 <Column dataKey="url"
+                        cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.url}
                         isResizable={true}
                         label="Url"
                         flexGrow={null}/>
                 <Column dataKey="size"
+                        cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.size}
                         isResizable={true}
                         label="Size"/>
                 <Column dataKey="time"
+                        cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.time}
                         isResizable={true}
                         label="Timeline"/>
             </Table>
         )
     }
+
+    readKey(key, entry) {
+        var keyMap = {
+            url: 'request.url',
+            time: 'time.start'
+        };
+
+        key = keyMap[key] || key;
+
+        return _.get(entry, key);
+    }
+
 
     getEntry(index) {
         return this.props.entries[index];
