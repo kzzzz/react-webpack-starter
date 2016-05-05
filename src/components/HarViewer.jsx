@@ -1,14 +1,13 @@
 require('fixed-data-table/dist/fixed-data-table.css');
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-
 import _ from 'lodash';
-import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Alert} from 'react-bootstrap';
+import React from 'react';
+import {Grid, Row, Col, PageHeader, Alert} from 'react-bootstrap';
 
-import mimeTypes from '../core/mime-types';
 import harParser from '../core/har-parser';
 import FilterBar from './FilterBar.jsx';
+import SampleSelector from './SampleSelector.jsx';
+import PieChart from './PieChart.jsx';
 import HarEntryTable from './HarEntryTable.jsx';
 
 class HarViewer extends React.Component {
@@ -27,10 +26,6 @@ class HarViewer extends React.Component {
         };
     }
 
-    componentDidMount() {
-    }
-
-
     render() {
         const content = this.state.activeHar
             ? this.renderViewer(this.state.activeHar)
@@ -45,27 +40,17 @@ class HarViewer extends React.Component {
     }
 
     renderHeader() {
-        let options = _.map(window.samples, s => (<option key={s.id} value={s.id}>{s.label}</option>));
-
         return (
             <Grid fluid>
                 <Row>
                     <Col sm={12}>
-                        <PageHeader>
-                            HAR Viewer
-                        </PageHeader>
+                        <PageHeader> HAR Viewer </PageHeader>
                     </Col>
                     <Col sm={3} smOffset={9}>
-                        <label className="control-label"></label>
-                        <select ref="selector"
-                                className="form-control"
-                                onChange={this.sampleChanged.bind(this)}>
-                            <option value="">---</option>
-                            {options}
-                        </select>
+                        <SampleSelector onSampleChanged={this.sampleChanged.bind(this)}/>
                     </Col>
                     <Col sm={12}>
-                        <p>Pie Chart</p>
+                        <PieChart />
                     </Col>
                 </Row>
             </Grid>
@@ -111,21 +96,6 @@ class HarViewer extends React.Component {
         )
     }
 
-    sampleChanged() {
-        let selection = ReactDOM.findDOMNode(this.refs.selector).value;
-
-        let har = selection
-            ? _.find(window.samples, s => s.id === selection).har
-            : null;
-
-
-        if (har) {
-            this.setState({activeHar: har});
-        } else {
-            this.setState(this.initialState());
-        }
-    }
-
     onColumnSort(dataKey, direction) {
         this.setState({sortKey: dataKey, sortDirection: direction});
     }
@@ -155,9 +125,6 @@ class HarViewer extends React.Component {
     }
 
     filterEntries(filter, entries) {
-
-        console.log('fitlerEntries', filter, entries);
-
         var filtered = _.filter(entries, x => {
             let matchesType = filter.type === 'all' || filter.type === x.type;
             // let matchesText = _.includes(x.request.url, filter.text || '');
@@ -165,7 +132,6 @@ class HarViewer extends React.Component {
             return matchesType;
         });
 
-        console.log('filtered', filtered.length);
         return filtered;
     }
 
@@ -175,6 +141,14 @@ class HarViewer extends React.Component {
 
     onFilterTextChange(filterText) {
         this.setState({filterText});
+    }
+
+    sampleChanged(har) {
+        if (har) {
+            this.setState({activeHar: har});
+        } else {
+            this.setState(this.initialState());
+        }
     }
 }
 
