@@ -8,7 +8,7 @@ import harParser from '../core/har-parser';
 import FilterBar from './FilterBar.jsx';
 import SampleSelector from './SampleSelector.jsx';
 import PieChart from './PieChart.jsx';
-import HarEntryTable from './HarEntryTable.jsx';
+import HarEntryTable from './har-entry-table/HarEntryTable.jsx';
 
 class HarViewer extends React.Component {
     constructor() {
@@ -76,6 +76,7 @@ class HarViewer extends React.Component {
                     <Col sm={12}>
                         <HarEntryTable
                             entries={entries}
+                            page={currentPage}
                             onColumnSort={this.onColumnSort.bind(this)}/>
                     </Col>
                 </Row>

@@ -1,10 +1,13 @@
 require('fixed-data-table/dist/fixed-data-table.css');
+require('./_har-entry-table.scss');
 
-import React from 'react';
+import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import d3 from 'd3';
 
 import _ from 'lodash';
 import FixedDataTable from 'fixed-data-table';
+import TimeBar from '../timebar/TimeBar.jsx';
 
 const {Table, Column} = FixedDataTable;
 const GutterWidth = 30;
@@ -68,6 +71,7 @@ class HarEntryTable extends React.Component {
                         label="Size"/>
                 <Column dataKey="time"
                         headerRenderer={this.renderHeader.bind(this)}
+                        cellRenderer={this.renderTimeColumn.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.time}
                         isResizable={true}
@@ -87,6 +91,55 @@ class HarEntryTable extends React.Component {
         return _.get(entry, key);
     }
 
+    renderHeader(label, dataKey) {
+        var dir = this.state.sortDirection[dataKey];
+
+        var classMap = {
+            asc: 'glyphicon, glyphicon-sort-by-attributes',
+            desc: 'glyphicon, glyphicon-sort-by-attributes-alt'
+        };
+
+        var sortClass = dir ? classMap[dir] : '';
+
+        return (
+            <div className="text-primary sortable"
+                 onClick={this.columnClicked.bind(this, dataKey)}>
+                <strong>{label}</strong>
+                &nbsp;
+                <i className={sortClass}></i>
+            </div>
+        )
+    }
+
+    renderTimeColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        const {start, total} = rowData.time;
+        const pgTimings = this.props.page.pageTimings;
+        const scale = this.prepareScale(this.props.entries, this.props.page);
+
+        console.log('renderTimeColumn', start, total, pgTimings);
+
+        return (
+            <TimeBar scale={scale}
+                     start={start}
+                     total={total}
+                     timings={rowData.time.details}
+                     domContentLoad={pgTimings.onContentLoad}
+                     pageLoad={pgTimings.pageLoad}/>
+        );
+    }
+
+    prepareScale(entries, page) {
+        let startTime = 0;
+        let lastEntry = _.last(entries);
+        let endTime = lastEntry.time.start + lastEntry.time.total;
+        let maxTime = Math.max(endTime, page.pageTimings.onLoad);
+
+        var scale = d3.scale.linear()
+            .domain([startTime, Math.ceil(maxTime)])
+            .range([0, 100]);
+
+        return scale;
+    }
 
     getEntry(index) {
         return this.props.entries[index];
@@ -109,26 +162,6 @@ class HarEntryTable extends React.Component {
             tableWidth: parent.clientWidth - GutterWidth,
             tableHeight: document.body.clientHeight - parent.offsetTop - GutterWidth * 0.5
         })
-    }
-
-    renderHeader(label, dataKey) {
-        var dir = this.state.sortDirection[dataKey];
-
-        var classMap = {
-            asc: 'glyphicon, glyphicon-sort-by-attributes',
-            desc: 'glyphicon, glyphicon-sort-by-attributes-alt'
-        };
-
-        var sortClass = dir ? classMap[dir] : '';
-
-        return (
-            <div className="text-primary sortable"
-                 onClick={this.columnClicked.bind(this, dataKey)}>
-                <strong>{label}</strong>
-                &nbsp;
-                <i className={sortClass}></i>
-            </div>
-        )
     }
 
     columnClicked(dataKey) {
@@ -156,12 +189,14 @@ class HarEntryTable extends React.Component {
 
 HarEntryTable.defaultProps = {
     entries: [],
+    page: null,
     onColumnSort: null
 };
 
 HarEntryTable.propTypes = {
-    entries: React.PropTypes.array,
-    onColumnSort: React.PropTypes.func
+    entries: PropTypes.array,
+    page: PropTypes.object,
+    onColumnSort: PropTypes.func
 };
 
 export default HarEntryTable;
