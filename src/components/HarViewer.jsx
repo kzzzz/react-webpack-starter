@@ -7,7 +7,7 @@ import {Grid, Row, Col, PageHeader, Alert} from 'react-bootstrap';
 import harParser from '../core/har-parser';
 import FilterBar from './FilterBar.jsx';
 import SampleSelector from './SampleSelector.jsx';
-import PieChart from './PieChart.jsx';
+import TypePieChart from './pie-chart/TypePieChart.jsx';
 import HarEntryTable from './har-entry-table/HarEntryTable.jsx';
 
 class HarViewer extends React.Component {
@@ -49,9 +49,6 @@ class HarViewer extends React.Component {
                     <Col sm={3} smOffset={9}>
                         <SampleSelector onSampleChanged={this.sampleChanged.bind(this)}/>
                     </Col>
-                    <Col sm={12}>
-                        <PieChart />
-                    </Col>
                 </Row>
             </Grid>
         )
@@ -70,8 +67,17 @@ class HarViewer extends React.Component {
 
         return (
             <Grid fluid>
-                <FilterBar onChange={this.onFilterChanged.bind(this)}
-                           onFilterTextChange={this.onFilterTextChange.bind(this)}/>
+                <Row>
+                    <Col sm={12}>
+                        <TypePieChart entries={currentPage.entries}/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm={12}>
+                        <FilterBar onChange={this.onFilterChanged.bind(this)}
+                                   onFilterTextChange={this.onFilterTextChanged.bind(this)}/>
+                    </Col>
+                </Row>
                 <Row>
                     <Col sm={12}>
                         <HarEntryTable
@@ -140,7 +146,7 @@ class HarViewer extends React.Component {
         this.setState({filterType});
     }
 
-    onFilterTextChange(filterText) {
+    onFilterTextChanged(filterText) {
         this.setState({filterText});
     }
 

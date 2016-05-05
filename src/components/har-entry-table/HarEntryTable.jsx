@@ -99,8 +99,8 @@ class HarEntryTable extends React.Component {
         var dir = this.state.sortDirection[dataKey];
 
         var classMap = {
-            asc: 'glyphicon, glyphicon-sort-by-attributes',
-            desc: 'glyphicon, glyphicon-sort-by-attributes-alt'
+            asc: 'glyphicon glyphicon-sort-by-attributes',
+            desc: 'glyphicon glyphicon-sort-by-attributes-alt'
         };
 
         var sortClass = dir ? classMap[dir] : '';

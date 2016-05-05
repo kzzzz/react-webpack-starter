@@ -29,19 +29,14 @@ class FilterBar extends React.Component {
                         {buttons}
                     </ButtonGroup>
                 </Col>
+                <Col sm={4}>
+                    <Input type="search"
+                           placeholder="Search Url"
+                           bsSize="small"
+                           onChange={this.filterTextChanged.bind(this)}
+                           ref="filterText"/>
+                </Col>
             </Row>
-        )
-    }
-
-    renderSearchInput() {
-        return (
-            <Col sm={4}>
-                <Input type="search"
-                       placeholder="Search URL"
-                       bsSize="small"
-                       onChange={this.filterTextChanged.bind(this)}
-                       ref="filterText"/>
-            </Col>
         )
     }
 
@@ -60,8 +55,8 @@ class FilterBar extends React.Component {
     filterTextChanged() {
 
         if (this.props.onFilterTextChange) {
-            let filterText = ReactDOM.findDOMNode(this.refs.filterText).value();
-            this.props.onFilterTextChang(filterText)
+            let filterText = ReactDOM.findDOMNode(this.refs.filterText).value;
+            this.props.onFilterTextChange(filterText)
         }
 
     }
@@ -83,7 +78,7 @@ FilterBar.defaultProps = {
 
 FilterBar.propTypes = {
     onChange: React.PropTypes.func,
-    onFilterTextChang: React.PropTypes.func
+    onFilterTextChange: React.PropTypes.func
 };
 
 export default FilterBar;
