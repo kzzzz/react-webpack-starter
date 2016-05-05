@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import _ from 'lodash';
-import {Row, Col, Button, ButtonGroup, Input} from 'react-bootstrap';
+import {Row, Col, Button, ButtonGroup, Input, FormGroup, FormControl} from 'react-bootstrap';
 
 import mimeTypes from '../core/mime-types';
 
@@ -30,11 +30,13 @@ class FilterBar extends React.Component {
                     </ButtonGroup>
                 </Col>
                 <Col sm={4}>
-                    <Input type="search"
-                           placeholder="Search Url"
-                           bsSize="small"
-                           onChange={this.filterTextChanged.bind(this)}
-                           ref="filterText"/>
+                    <FormGroup>
+                        <FormControl type="text"
+                                     placeholder="Search Url"
+                                     bsSize="small"
+                                     onChange={this.filterTextChanged.bind(this)}
+                                     ref="filterText"/>
+                    </FormGroup>
                 </Col>
             </Row>
         )
@@ -53,16 +55,13 @@ class FilterBar extends React.Component {
     }
 
     filterTextChanged() {
-
         if (this.props.onFilterTextChange) {
             let filterText = ReactDOM.findDOMNode(this.refs.filterText).value;
             this.props.onFilterTextChange(filterText)
         }
-
     }
 
     filterRequested(type, event) {
-        console.log('filterRequested', type, event);
 
         this.setState({type, event});
         if (this.props.onChange) {

@@ -60,7 +60,7 @@ class HarViewer extends React.Component {
         let currentPage = pages[0];
         let filter = {
             type: this.state.filterType,
-            entries: currentPage.entries
+            text: this.state.filterText
         };
         let filteredEntries = this.filterEntries(filter, currentPage.entries);
         let entries = this.sortEntriesByKey(this.state.sortKey, this.state.sortDirection, filteredEntries);
@@ -134,9 +134,9 @@ class HarViewer extends React.Component {
     filterEntries(filter, entries) {
         var filtered = _.filter(entries, x => {
             let matchesType = filter.type === 'all' || filter.type === x.type;
-            // let matchesText = _.includes(x.request.url, filter.text || '');
+            let matchesText = filter.text && _.includes(x.request.url, filter.text);
 
-            return matchesType;
+            return matchesType || matchesText;
         });
 
         return filtered;
