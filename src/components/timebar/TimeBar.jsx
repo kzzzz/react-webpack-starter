@@ -1,5 +1,9 @@
 require('./_timebar.scss');
 import React, {PropTypes} from 'react';
+import {Popover, OverlayTrigger} from 'react-bootstrap';
+import formatter from '../../core/formatter';
+
+import TimingDetails from './TimingDetails.jsx';
 
 export default class TimeBar extends React.Component {
     constructor() {
@@ -8,15 +12,30 @@ export default class TimeBar extends React.Component {
     }
 
     render() {
+        var label = formatter.time(this.props.total);
+
+        var overlay = (
+            <Popover title={`Timing Details, started at: ${formatter.time(this.props.start)}`}>
+                <TimingDetails timings={this.props.timings}
+                               start={this.props.start}
+                               total={this.props.total}/>
+            </Popover>
+        );
+
         return (
-            <div className="timebar">
-                {this.renderBarElements()}
-                <span className="timebar-label">{this.props.total}</span>
-            </div>
+            <OverlayTrigger trigger={['hover', 'focus']}
+                            placement="left"
+                            delay={0}
+                            overlay={overlay}>
+                <div className="timebar">
+                    {this.renderBarElements()}
+                    <span className="timebar-label">{label}</span>
+                </div>
+            </OverlayTrigger>
         )
     }
 
-    renderBarElements(){
+    renderBarElements() {
         let value = v =>`${this.props.scale(v)}%`;
 
         var bars = [
