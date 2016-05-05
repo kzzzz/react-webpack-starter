@@ -3,11 +3,13 @@ require('./_har-entry-table.scss');
 
 import React, {PropTypes} from 'react';
 import ReactDOM from 'react-dom';
-import d3 from 'd3';
-
-import _ from 'lodash';
 import FixedDataTable from 'fixed-data-table';
+import d3 from 'd3';
+import _ from 'lodash';
+
+import formatter from '../../core/formatter';
 import TimeBar from '../timebar/TimeBar.jsx';
+import FileType from '../file-type/FileType.jsx';
 
 const {Table, Column} = FixedDataTable;
 const GutterWidth = 30;
@@ -58,6 +60,7 @@ class HarEntryTable extends React.Component {
                    onColumnResizeEndCallback={this.onColumnResized.bind(this)}>
                 <Column dataKey="url"
                         headerRenderer={this.renderHeader.bind(this)}
+                        cellRenderer={this.renderUrlColumn.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.url}
                         isResizable={true}
@@ -65,6 +68,7 @@ class HarEntryTable extends React.Component {
                         flexGrow={null}/>
                 <Column dataKey="size"
                         headerRenderer={this.renderHeader.bind(this)}
+                        cellRenderer={this.renderSizeColumn.bind(this)}
                         cellDataGetter={this.readKey.bind(this)}
                         width={this.state.columnWidths.size}
                         isResizable={true}
@@ -111,12 +115,18 @@ class HarEntryTable extends React.Component {
         )
     }
 
+    renderUrlColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        return (<FileType url={rowData.request.url} type={rowData.type}/>);
+    }
+
+    renderSizeColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
+        return (<span>{formatter.fileSize(cellData)}</span>);
+    }
+
     renderTimeColumn(cellData, cellDataKey, rowData, rowIndex, columnData, width) {
         const {start, total} = rowData.time;
         const pgTimings = this.props.page.pageTimings;
         const scale = this.prepareScale(this.props.entries, this.props.page);
-
-        console.log('renderTimeColumn', start, total, pgTimings);
 
         return (
             <TimeBar scale={scale}
