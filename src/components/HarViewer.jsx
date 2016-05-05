@@ -19,7 +19,8 @@ class HarViewer extends React.Component {
     initialState() {
         return {
             activeHar: null,
-            entries: []
+            sortKey: null,
+            sortDirection: null
         };
     }
 
@@ -82,8 +83,9 @@ class HarViewer extends React.Component {
 
         let pages = harParser(har);
         let currentPage = pages[0];
-        let entries = currentPage.entries;
-        entries = this.sortEntriesByKey(this.state.sortKey, this.state.sortDirection, currentPage.entries);
+        let entries = this.sortEntriesByKey(this.state.sortKey,
+            this.state.sortDirection,
+            currentPage.entries);
 
         return (
             <Grid fluid>
@@ -151,7 +153,7 @@ class HarViewer extends React.Component {
     }
 
     sortEntriesByKey(sortKey, sortDirection, entries) {
-        if(_.isEmpty(sortKey) | _.isEmpty(sortDirection)){
+        if (_.isEmpty(sortKey) || _.isEmpty(sortDirection)) {
             return entries;
         }
 
@@ -160,19 +162,18 @@ class HarViewer extends React.Component {
             time: 'time.start'
         };
 
-        var getValue = function(entry){
+        var getValue = function (entry) {
             let key = keyMap[sortKey] || sortKey;
             return _.get(entry, key);
         };
 
         var sorted = _.sortBy(entries, getValue);
 
-        if(sortDirection === 'desc'){
+        if (sortDirection === 'desc') {
             sorted.reverse();
         }
 
         return sorted;
-
     }
 }
 

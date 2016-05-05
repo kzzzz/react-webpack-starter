@@ -113,6 +113,7 @@ class HarEntryTable extends React.Component {
 
     renderHeader(label, dataKey) {
         var dir = this.state.sortDirection[dataKey];
+
         var classMap = {
             asc: 'glyphicon, glyphicon-sort-by-attributes',
             desc: 'glyphicon, glyphicon-sort-by-attributes-alt'
@@ -142,6 +143,10 @@ class HarEntryTable extends React.Component {
             default:
                 dir = 'asc';
         }
+
+        // Reset all sorts
+        _.each(_.keys(sortDirections), x => sortDirections[x] = null);
+        sortDirections[dataKey] = dir;
 
         if (this.props.onColumnSort) {
             this.props.onColumnSort(dataKey, dir);
