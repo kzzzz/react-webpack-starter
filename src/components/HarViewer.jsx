@@ -8,6 +8,7 @@ import {Grid, Row, Col, PageHeader, Button, ButtonGroup, Alert} from 'react-boot
 
 import mimeTypes from '../core/mime-types';
 import harParser from '../core/har-parser';
+import FilterBar from './FilterBar.jsx';
 import HarEntryTable from './HarEntryTable.jsx';
 
 class HarViewer extends React.Component {
@@ -20,7 +21,9 @@ class HarViewer extends React.Component {
         return {
             activeHar: null,
             sortKey: null,
-            sortDirection: null
+            sortDirection: null,
+            filterType: 'all',
+            filterText: null
         };
     }
 
@@ -42,10 +45,6 @@ class HarViewer extends React.Component {
     }
 
     renderHeader() {
-
-        var types = _.keys(mimeTypes.types);
-
-        var buttons = _.map(types, (x) => this.createButton(x, mimeTypes.types[x].label));
         let options = _.map(window.samples, s => (<option key={s.id} value={s.id}>{s.label}</option>));
 
         return (
@@ -68,12 +67,6 @@ class HarViewer extends React.Component {
                     <Col sm={12}>
                         <p>Pie Chart</p>
                     </Col>
-                    <Col sm={8} bsSize="small">
-                        <ButtonGroup>
-                            {this.createButton('all', 'All')}
-                            {buttons}
-                        </ButtonGroup>
-                    </Col>
                 </Row>
             </Grid>
         )
@@ -83,12 +76,17 @@ class HarViewer extends React.Component {
 
         let pages = harParser(har);
         let currentPage = pages[0];
-        let entries = this.sortEntriesByKey(this.state.sortKey,
-            this.state.sortDirection,
-            currentPage.entries);
+        let filter = {
+            type: this.state.filterType,
+            entries: currentPage.entries
+        };
+        let filteredEntries = this.filterEntries(filter, currentPage.entries);
+        let entries = this.sortEntriesByKey(this.state.sortKey, this.state.sortDirection, filteredEntries);
 
         return (
             <Grid fluid>
+                <FilterBar onChange={this.onFilterChanged.bind(this)}
+                           onFilterTextChange={this.onFilterTextChange.bind(this)}/>
                 <Row>
                     <Col sm={12}>
                         <HarEntryTable
@@ -128,26 +126,6 @@ class HarViewer extends React.Component {
         }
     }
 
-    createButton(type, label) {
-        var handler = this.filterRequested.bind(this, type);
-        return (
-            <Button key={type}
-                    bsStyle="primary"
-                    active={this.state.type === type}
-                    onClick={handler}>
-                {label}
-            </Button>
-        )
-    }
-
-    filterRequested(type, event) {
-
-    }
-
-    filterTextChanged() {
-
-    }
-
     onColumnSort(dataKey, direction) {
         this.setState({sortKey: dataKey, sortDirection: direction});
     }
@@ -174,6 +152,29 @@ class HarViewer extends React.Component {
         }
 
         return sorted;
+    }
+
+    filterEntries(filter, entries) {
+
+        console.log('fitlerEntries', filter, entries);
+
+        var filtered = _.filter(entries, x => {
+            let matchesType = filter.type === 'all' || filter.type === x.type;
+            // let matchesText = _.includes(x.request.url, filter.text || '');
+
+            return matchesType;
+        });
+
+        console.log('filtered', filtered.length);
+        return filtered;
+    }
+
+    onFilterChanged(filterType) {
+        this.setState({filterType});
+    }
+
+    onFilterTextChange(filterText) {
+        this.setState({filterText});
     }
 }
 
