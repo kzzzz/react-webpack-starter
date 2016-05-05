@@ -1,5 +1,5 @@
-// require('bootstrap/dist/css/bootstrap.css');
-// require('bootstrap/dist/css/bootstrap-theme.css');
+require('bootstrap/dist/css/bootstrap.css');
+require('bootstrap/dist/css/bootstrap-theme.css');
 require('./styles/app.scss');
 require('./samples');
 

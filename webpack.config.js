@@ -29,8 +29,8 @@ module.exports = {
                 loader: 'json-loader'
             },
             {
-                test: /\.(jsvg|ttf|woff|woff2|eot)(\?v=\d+\.d+\.d+)?$/,
-                loader: 'url-loader'
+                test: /\.(svg|ttf|woff|woff2|eot)(\?v=\d+\.\d+\.\d+)?$/,
+                loader: "url-loader"
             }
         ]
     },
